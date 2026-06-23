@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { api } from '../api';
-import type { Ticket } from '../api';
-import { useTheme } from '../App';
+import { api } from '../../shared/services/api';
+import type { Ticket } from '../../types';
+import { useTheme } from '../../app/App';
 import {
   PhoneCall, RotateCcw, ArrowLeftRight, CheckCircle2,
   SkipForward, LogOut, Sun, Moon,

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { api } from '../api';
-import { useTheme, useLang } from '../App';
+import { api } from '../../shared/services/api';
+import { useTheme, useLang } from '../../app/App';
 import {
   QrCode, Brain, Radio, Mic, Building2,
   ArrowRight, ChevronRight, Sun, Moon,

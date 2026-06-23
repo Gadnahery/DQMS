@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { api, getSupabaseClient } from '../api';
-import type { Service, Ticket, Counter } from '../api';
-import { useTheme } from '../App';
+import { api, getSupabaseClient } from '../../shared/services/api';
+import type { Service, Ticket, Counter } from '../../types';
+import { useTheme } from '../../app/App';
 import {
   LayoutDashboard, Users, ShieldCheck, Settings,
   Layers, Building2, BarChart3, FileText, LogOut,

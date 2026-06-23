@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { api, getSupabaseClient } from '../api';
-import type { Service, Ticket, Announcement } from '../api';
-import { useLang, useTheme } from '../App';
+import { api, getSupabaseClient } from '../../shared/services/api';
+import type { Service, Ticket, Announcement } from '../../types';
+import { useLang, useTheme } from '../../app/App';
 import {
   Home, Ticket as TicketIcon, MapPin, Bell, User,
   Search, ArrowRight, ArrowLeft, CheckCircle,

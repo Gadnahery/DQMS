@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { api } from '../api';
-import type { Ticket, Counter } from '../api';
-import { useTheme } from '../App';
+import { api } from '../../shared/services/api';
+import type { Ticket, Counter } from '../../types';
+import { useTheme } from '../../app/App';
 import {
   LayoutDashboard, Monitor, BarChart3, Radio,
   LogOut, Sun, Moon, TrendingUp,

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { getSupabaseClient, api } from '../api';
-import { useTheme } from '../App';
+import { getSupabaseClient, api } from '../../shared/services/api';
+import { useTheme } from '../../app/App';
 import {
   Mail, Lock, User, Phone, Eye, EyeOff,
   ArrowLeft, Ticket, Sun, Moon, ArrowRight

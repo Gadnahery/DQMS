@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { api } from '../api';
-import type { Ticket, Announcement } from '../api';
+import { api } from '../../shared/services/api';
+import type { Ticket, Announcement } from '../../types';
 import { ArrowLeft, Volume2, VolumeX } from 'lucide-react';
 
 interface DisplayBoardProps {

@@ -1,11 +1,11 @@
 import { useState, useEffect, createContext, useContext } from 'react';
-import { Welcome } from './pages/Welcome';
-import { LoginPage } from './pages/LoginPage';
-import { CustomerPortal } from './pages/CustomerPortal';
-import { StaffPortal } from './pages/StaffPortal';
-import { SupervisorPortal } from './pages/SupervisorPortal';
-import { AdminPortal } from './pages/AdminPortal';
-import { DisplayBoard } from './pages/DisplayBoard';
+import { Welcome } from '../features/landing/Welcome';
+import { LoginPage } from '../features/auth/LoginPage';
+import { CustomerPortal } from '../features/customer/CustomerPortal';
+import { StaffPortal } from '../features/staff/StaffPortal';
+import { SupervisorPortal } from '../features/supervisor/SupervisorPortal';
+import { AdminPortal } from '../features/admin/AdminPortal';
+import { DisplayBoard } from '../features/display/DisplayBoard';
 
 /* ─── Theme Context ─────────────────────────────────────────── */
 interface ThemeCtx {
