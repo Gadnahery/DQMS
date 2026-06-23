@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { api } from '../api';
+import { api, getSupabaseClient } from '../api';
 import type { Service, Ticket, Counter } from '../api';
 import { useTheme } from '../App';
 import {
@@ -136,13 +136,32 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigate }) => {
     e.preventDefault();
     setLoginLoading(true);
     setLoginError('');
-    await new Promise(r => setTimeout(r, 700));
-    if (adminEmail.toLowerCase() === 'gadnahery7@gmail.com' || adminPass === 'password') {
-      setLoggedIn(true);
-    } else {
-      setLoginError('Invalid credentials. Access restricted.');
+    
+    try {
+      const supabase = getSupabaseClient();
+      if (!supabase) throw new Error('System is not connected to database. Check environment variables.');
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: adminEmail,
+        password: adminPass
+      });
+
+      if (error) throw error;
+      
+      if (data.user) {
+        const role = await api.getUserRole(data.user.id);
+        if (role === 'admin') {
+          setLoggedIn(true);
+        } else {
+          await supabase.auth.signOut();
+          setLoginError('Access restricted. Admin privileges required.');
+        }
+      }
+    } catch (err: any) {
+      setLoginError(err.message || 'Invalid credentials.');
+    } finally {
+      setLoginLoading(false);
     }
-    setLoginLoading(false);
   };
 
   const handleSaveService = async () => {
