@@ -1006,51 +1006,7 @@ img, svg {
    CUSTOMER PORTAL COMPONENTS
    ============================================================ */
 
-/* Bottom navigation bar */
-.customer-bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 64px;
-  background: var(--bg-nav);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border-top: 1px solid var(--border-card);
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding: 0 8px;
-  z-index: 500;
-}
-
-.cust-nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  color: var(--text-subtle);
-  cursor: pointer;
-  transition: var(--transition);
-  padding: 8px 16px;
-  border-radius: var(--radius-sm);
-  min-width: 56px;
-}
-
-.cust-nav-item.active {
-  color: var(--primary);
-}
-
-.cust-nav-item.active .cust-nav-icon {
-  color: var(--primary);
-}
-
-.cust-nav-label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
+/* Removed legacy flat bottom nav CSS to allow floating iOS nav at EOF */
 
 .customer-page {
   min-height: 100vh;
@@ -2244,10 +2200,26 @@ img, svg {
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .how-steps { grid-template-columns: 1fr; }
   .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-  .admin-sidebar { transform: translateX(-100%); }
+  
+  .admin-sidebar { 
+    transform: translateX(-100%); 
+    width: 240px !important;
+  }
+  .admin-sidebar.mobile-open { 
+    transform: translateX(0); 
+    box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+  }
+  
   .admin-main { margin-left: 0; }
   .board-next-panel { display: none; }
   .board-ticket-number { font-size: 120px; }
+  
+  .hero-section {
+    padding: 60px 16px;
+  }
+  .hero-title {
+    font-size: 32px;
+  }
 }
 
 @media (min-width: 769px) {

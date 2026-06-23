@@ -293,7 +293,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigate }) => {
       )}
 
       {/* ── Sidebar ───────────────────────────────────────────── */}
-      <aside className={`admin-sidebar ${!sidebarOpen ? 'collapsed' : ''}`}>
+      <aside className={`admin-sidebar ${!sidebarOpen ? 'collapsed' : ''} ${sidebarOpen ? 'mobile-open' : ''}`}>
         <div className="admin-sidebar-logo">
           <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg, var(--purple), var(--primary))', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <ShieldCheck size={16} color="#fff" />
@@ -306,7 +306,10 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigate }) => {
             <button
               key={item.key}
               className={`sidebar-item ${section === item.key ? 'active' : ''}`}
-              onClick={() => setSection(item.key)}
+              onClick={() => {
+                setSection(item.key);
+                if (window.innerWidth <= 768) setSidebarOpen(false);
+              }}
               style={{ background: 'none', border: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}
               title={!sidebarOpen ? item.label : undefined}
             >
