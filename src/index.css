@@ -2348,6 +2348,72 @@ img, svg {
   background: var(--bg-card-hover);
 }
 
-.ios-bottom-nav { display: none !important; }
-.desktop-tabs { display: none !important; }
-.theme-toggle { display: none !important; }
+/* ============================================================
+   IOS FLOATING BOTTOM NAVIGATION (Mobile Only)
+   ============================================================ */
+
+.customer-page {
+  padding-bottom: 90px; /* Space for the floating bottom nav */
+}
+
+.customer-bottom-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .customer-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 24px;
+    left: 20px;
+    right: 20px;
+    height: 64px;
+    background: var(--bg-card-glass);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-card);
+    border-radius: 32px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    z-index: 1000;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 10px;
+  }
+
+  .cust-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 60px;
+    height: 100%;
+    color: var(--text-muted);
+    transition: var(--transition);
+  }
+
+  .cust-nav-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+    transition: var(--transition);
+  }
+
+  .cust-nav-label {
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  .cust-nav-item.active {
+    color: var(--primary);
+  }
+
+  .cust-nav-item.active .cust-nav-icon {
+    background: var(--primary-subtle);
+    color: var(--primary);
+  }
+}
+

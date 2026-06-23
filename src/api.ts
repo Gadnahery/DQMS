@@ -134,6 +134,16 @@ let mockPings: Record<number, { lastPingAt: string; ip: string }> = {};
 // ----------------------------------------------------
 
 export const api = {
+  async getUserRole(userId: string): Promise<string> {
+    if (!supabase) return localStorage.getItem('user_role') || 'customer';
+    const { data, error } = await supabase.from('user_roles').select('role').eq('id', userId).single();
+    if (error) {
+      console.warn('Failed to fetch role:', error.message);
+      return 'customer';
+    }
+    return data?.role || 'customer';
+  },
+
   // SERVICES
   getServices: async (): Promise<Service[]> => {
     if (supabase) {

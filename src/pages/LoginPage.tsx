@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { getSupabaseClient } from '../api';
+import { getSupabaseClient, api } from '../api';
 import { useTheme } from '../App';
 import {
   Mail, Lock, User, Phone, Eye, EyeOff,
@@ -74,12 +74,17 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
       } else {
         // Login
         if (supabase) {
-          const { error } = await supabase.auth.signInWithPassword({ email, password });
+          const { data, error } = await supabase.auth.signInWithPassword({ email, password });
           if (error) throw error;
+          
           localStorage.removeItem('dqms_guest_mode');
-          localStorage.setItem('user_role', 'customer');
-          setSuccess('Signed in! Redirecting...');
-          setTimeout(() => onNavigate('customer'), 800);
+          let role = 'customer';
+          if (data.user) {
+            role = await api.getUserRole(data.user.id);
+          }
+          localStorage.setItem('user_role', role);
+          setSuccess(`Signed in as ${role}! Redirecting...`);
+          setTimeout(() => onNavigate(role), 800);
         } else {
           localStorage.removeItem('dqms_guest_mode');
           localStorage.setItem('user_role', 'customer');
