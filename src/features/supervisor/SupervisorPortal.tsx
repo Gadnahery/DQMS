@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { api } from '../../shared/services/api';
+import { api, getSupabaseClient } from '../../shared/services/api';
 import type { Ticket, Counter } from '../../types';
 import { useTheme } from '../../app/App';
 import {
@@ -95,13 +95,31 @@ export const SupervisorPortal: React.FC<SupervisorPortalProps> = ({ onNavigate }
     e.preventDefault();
     setLoginLoading(true);
     setLoginError('');
-    await new Promise(r => setTimeout(r, 600));
-    if (svPass === 'password') {
-      setLoggedIn(true);
-    } else {
-      setLoginError('Invalid credentials. Use password: "password"');
+    try {
+      const supabase = getSupabaseClient();
+      if (!supabase) throw new Error('System is not connected to database');
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: svId,
+        password: svPass
+      });
+
+      if (error) throw error;
+      
+      if (data.user) {
+        const role = await api.getUserRole(data.user.id);
+        if (['admin', 'supervisor'].includes(role)) {
+          setLoggedIn(true);
+        } else {
+          await supabase.auth.signOut();
+          setLoginError('Access restricted. Supervisor privileges required.');
+        }
+      }
+    } catch (err: any) {
+      setLoginError(err.message || 'Invalid credentials.');
+    } finally {
+      setLoginLoading(false);
     }
-    setLoginLoading(false);
   };
 
   const handleBroadcast = async () => {
@@ -146,8 +164,8 @@ export const SupervisorPortal: React.FC<SupervisorPortalProps> = ({ onNavigate }
           <form onSubmit={handleLogin}>
             <div className="input-group">
               <div className="input-wrap">
-                <span className="input-icon" style={{ fontSize: 13, fontWeight: 700, left: 12 }}>ID</span>
-                <input className="form-input" type="text" placeholder="Supervisor ID" value={svId} onChange={e => setSvId(e.target.value)} required />
+                <span className="input-icon" style={{ fontSize: 13, fontWeight: 700, left: 12 }}>@</span>
+                <input className="form-input" type="email" placeholder="Email Address" value={svId} onChange={e => setSvId(e.target.value)} required />
               </div>
               <div className="input-wrap">
                 <span className="input-icon" style={{ fontSize: 13, fontWeight: 700, left: 12 }}>🔑</span>

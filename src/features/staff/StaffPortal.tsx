@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { api } from '../../shared/services/api';
+import { api, getSupabaseClient } from '../../shared/services/api';
 import type { Ticket } from '../../types';
 import { useTheme } from '../../app/App';
 import {
@@ -61,13 +61,31 @@ export const StaffPortal: React.FC<StaffPortalProps> = ({ onNavigate }) => {
     e.preventDefault();
     setLoginLoading(true);
     setLoginError('');
-    await new Promise(r => setTimeout(r, 700));
-    if (password === 'password') {
-      setLoggedIn(true);
-    } else {
-      setLoginError('Invalid credentials. Use password: "password"');
+    try {
+      const supabase = getSupabaseClient();
+      if (!supabase) throw new Error('System is not connected to database');
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: employeeId,
+        password: password
+      });
+
+      if (error) throw error;
+      
+      if (data.user) {
+        const role = await api.getUserRole(data.user.id);
+        if (['admin', 'supervisor', 'staff'].includes(role)) {
+          setLoggedIn(true);
+        } else {
+          await supabase.auth.signOut();
+          setLoginError('Access restricted. Staff privileges required.');
+        }
+      }
+    } catch (err: any) {
+      setLoginError(err.message || 'Invalid credentials.');
+    } finally {
+      setLoginLoading(false);
     }
-    setLoginLoading(false);
   };
 
   const handleCallNext = async () => {
@@ -185,8 +203,8 @@ export const StaffPortal: React.FC<StaffPortalProps> = ({ onNavigate }) => {
                 <span className="input-icon"><User size={15} /></span>
                 <input
                   className="form-input"
-                  type="text"
-                  placeholder="Employee ID"
+                  type="email"
+                  placeholder="Email Address"
                   value={employeeId}
                   onChange={e => setEmployeeId(e.target.value)}
                   required
