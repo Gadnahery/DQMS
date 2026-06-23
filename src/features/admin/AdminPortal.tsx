@@ -314,10 +314,21 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigate }) => {
       {/* ── Sidebar ───────────────────────────────────────────── */}
       <aside className={`admin-sidebar ${!sidebarOpen ? 'collapsed' : ''} ${sidebarOpen ? 'mobile-open' : ''}`}>
         <div className="admin-sidebar-logo">
-          <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg, var(--purple), var(--primary))', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <ShieldCheck size={16} color="#fff" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
+            <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg, var(--purple), var(--primary))', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <ShieldCheck size={16} color="#fff" />
+            </div>
+            {sidebarOpen && <span className="sidebar-brand">DQMS Admin</span>}
           </div>
-          {sidebarOpen && <span className="sidebar-brand">DQMS Admin</span>}
+          {sidebarOpen && (
+            <button
+              className="hide-desktop"
+              onClick={() => setSidebarOpen(false)}
+              style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 4 }}
+            >
+              <X size={20} />
+            </button>
+          )}
         </div>
 
         <nav className="sidebar-nav">
