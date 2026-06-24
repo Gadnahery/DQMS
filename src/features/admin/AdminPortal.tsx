@@ -932,10 +932,10 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigate }) => {
             <div className="anim-fade-in-up">
               <div className="page-title-row">
                 <h2 className="page-title">Branch Management</h2>
-                <button className="btn btn-primary btn-sm"><Plus size={14} /> Add Branch</button>
+                <button className="btn btn-primary btn-sm" onClick={openNewBranch}><Plus size={14} /> Add Branch</button>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
-                {BRANCHES.map(branch => (
+                {branches.map(branch => (
                   <div key={branch.id} className="card">
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
                       <div>
@@ -951,8 +951,8 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigate }) => {
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: 8 }}>
-                      <button className="btn btn-secondary btn-sm" style={{ flex: 1, justifyContent: 'center' }}><Edit3 size={12} /> Edit</button>
-                      <button className="btn btn-secondary btn-sm" style={{ flex: 1, justifyContent: 'center' }}><Eye size={12} /> View</button>
+                      <button className="btn btn-secondary btn-sm" style={{ flex: 1, justifyContent: 'center' }} onClick={() => openEditBranch(branch)}><Edit3 size={12} /> Edit</button>
+                      <button className="btn btn-secondary btn-sm" style={{ flex: 1, justifyContent: 'center' }} onClick={() => { setSection('branches'); }}>{<Eye size={12} />} View</button>
                     </div>
                   </div>
                 ))}
@@ -1012,16 +1012,16 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigate }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {tickets.slice(0, 10).map(t => (
-                    <tr key={t.id}>
-                      <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{new Date(t.created_at).toLocaleString()}</td>
-                      <td style={{ fontSize: 13 }}>{t.customer_name || 'Customer'}</td>
-                      <td style={{ fontSize: 13 }}>Joined Queue</td>
-                      <td style={{ fontSize: 13, color: 'var(--primary)', fontWeight: 700 }}>{t.ticket_number}</td>
-                      <td><span className={`status-badge ${t.status === 'completed' ? 'online' : t.status === 'cancelled' ? 'offline' : 'active'}`}>{t.status}</span></td>
+                  {auditLogs.slice(0, 100).map(l => (
+                    <tr key={l.id}>
+                      <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{new Date(l.created_at).toLocaleString()}</td>
+                      <td style={{ fontSize: 13 }}>{l.actor_email || l.actor_id || 'System'}</td>
+                      <td style={{ fontSize: 13 }}>{l.action}</td>
+                      <td style={{ fontSize: 13, color: 'var(--primary)', fontWeight: 700 }}>{l.target || '—'}</td>
+                      <td><span className={`status-badge ${l.result === 'success' ? 'online' : 'offline'}`}>{l.result}</span></td>
                     </tr>
                   ))}
-                  {tickets.length === 0 && (
+                  {auditLogs.length === 0 && (
                     <tr><td colSpan={5} style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)' }}>No logs yet</td></tr>
                   )}
                 </tbody>
@@ -1055,7 +1055,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigate }) => {
               </div>
               <button
                 className="btn btn-primary"
-                onClick={() => { setSettingsSaved(true); setTimeout(() => setSettingsSaved(false), 3000); }}
+                onClick={handleSaveSettings}
               >
                 <Save size={14} /> Save Settings
               </button>
