@@ -4,7 +4,7 @@ import type { Service, Ticket, Counter, Announcement, Feedback } from '../../typ
 export { getSupabaseClient };
 
 export const api = {
-async getUserRole(userId: string): Promise<string> {
+async getUserRole(_userId: string): Promise<string> {
   const { data, error } = await supabase.rpc('get_my_role');
   if (error) {
     console.warn('Failed to fetch role:', error.message);
