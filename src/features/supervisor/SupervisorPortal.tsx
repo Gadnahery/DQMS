@@ -107,7 +107,7 @@ export const SupervisorPortal: React.FC<SupervisorPortalProps> = ({ onNavigate }
       if (error) throw error;
       
       if (data.user) {
-        const role = await api.getUserRole(data.user.id);
+        const role = await api.getUserRole(data.user.id, data.user.email);
         if (['admin', 'supervisor'].includes(role)) {
           setLoggedIn(true);
         } else {

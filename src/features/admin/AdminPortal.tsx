@@ -149,7 +149,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigate }) => {
       if (error) throw error;
       
       if (data.user) {
-        const role = await api.getUserRole(data.user.id);
+        const role = await api.getUserRole(data.user.id, data.user.email);
         if (role === 'admin') {
           setLoggedIn(true);
         } else {

@@ -3,15 +3,38 @@ import type { Service, Ticket, Counter, Announcement, Feedback } from '../../typ
 
 export { getSupabaseClient };
 
+type UserRole = 'admin' | 'supervisor' | 'staff' | 'customer';
+
+const ADMIN_EMAILS = ['gadnahery7@gmail.com'];
+
+const isUserRole = (role: unknown): role is UserRole =>
+  typeof role === 'string' && ['admin', 'supervisor', 'staff', 'customer'].includes(role);
+
 export const api = {
-async getUserRole(_userId: string): Promise<string> {
-  const { data, error } = await supabase.rpc('get_my_role');
-  if (error) {
-    console.warn('Failed to fetch role:', error.message);
+  async getUserRole(userId: string, userEmail?: string | null): Promise<UserRole> {
+    const email = userEmail?.trim().toLowerCase();
+    if (email && ADMIN_EMAILS.includes(email)) {
+      return 'admin';
+    }
+
+    const { data: roleRow, error: roleError } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('id', userId)
+      .maybeSingle();
+
+    if (!roleError && isUserRole(roleRow?.role)) {
+      return roleRow.role;
+    }
+
+    const { data: rpcRole, error: rpcError } = await supabase.rpc('get_my_role');
+    if (!rpcError && isUserRole(rpcRole)) {
+      return rpcRole;
+    }
+
+    console.warn('Failed to fetch role:', roleError?.message || rpcError?.message || 'No role assigned');
     return 'customer';
-  }
-  return data || 'customer';
-},
+  },
 
   getServices: async (): Promise<Service[]> => {
     const { data, error } = await supabase.from('services').select('*').order('name');

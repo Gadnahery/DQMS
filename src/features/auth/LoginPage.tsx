@@ -80,7 +80,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
           localStorage.removeItem('dqms_guest_mode');
           let role = 'customer';
           if (data.user) {
-            role = await api.getUserRole(data.user.id);
+            role = await api.getUserRole(data.user.id, data.user.email);
           }
           localStorage.setItem('user_role', role);
           setSuccess(`Signed in as ${role}! Redirecting...`);
