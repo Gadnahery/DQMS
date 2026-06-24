@@ -1,5 +1,5 @@
 import { supabase, getSupabaseClient } from '../../lib/supabase';
-import type { Service, Ticket, Counter, Announcement, Feedback, Branch, AppSetting, AuditLog } from '../../types';
+import type { Service, Ticket, Counter, Announcement, Feedback, Branch, AppSetting, AuditLog, User } from '../../types';
 
 export { getSupabaseClient };
 
@@ -142,6 +142,20 @@ export const api = {
     const { data, error } = await supabase.from('branches').select('*').order('name');
     if (error) throw error;
     return data || [];
+  },
+
+  // Users
+  getUsers: async (): Promise<User[]> => {
+    const { data: users, error: usersError } = await supabase.from('auth.users').select('id,email,created_at').order('created_at', { ascending: false });
+    const { data: roles, error: rolesError } = await supabase.from('user_roles').select('id,role');
+    if (usersError && rolesError) throw usersError || rolesError;
+    const roleMap = (roles || []).reduce<Record<string, string>>((acc, r: any) => { acc[r.id] = r.role; return acc; }, {});
+    return (users || []).map((u: any) => ({ id: u.id, email: u.email, role: (roleMap[u.id] as any) || 'customer', created_at: u.created_at }));
+  },
+
+  updateUserRole: async (id: string, role: string): Promise<void> => {
+    const { error } = await supabase.from('user_roles').upsert([{ id, role }], { onConflict: 'id' });
+    if (error) throw error;
   },
 
   createBranch: async (branch: Pick<Branch, 'name' | 'location' | 'status'>): Promise<Branch> => {

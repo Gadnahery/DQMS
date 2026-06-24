@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { api, getSupabaseClient } from '../../shared/services/api';
-import type { Service, Ticket, Counter, Branch, AuditLog } from '../../types';
+import type { Service, Ticket, Counter, Branch, AuditLog, User } from '../../types';
 import { useTheme } from '../../app/App';
 import {
   LayoutDashboard, Users, ShieldCheck, Settings,
@@ -31,14 +31,7 @@ const SIDEBAR_ITEMS: { key: AdminSection; icon: React.ReactNode; label: string }
   { key: 'settings', icon: <Settings size={16} />, label: 'Settings' },
 ];
 
-// Mock users for display (in a real system, fetched from Supabase auth.users)
-const MOCK_USERS = [
-  { id: 'u1', name: 'Admin User', email: 'admin@dqms.com', role: 'admin', status: 'active', lastLogin: '2025-06-23 08:12' },
-  { id: 'u2', name: 'Sarah Supervisor', email: 'sarah@dqms.com', role: 'supervisor', status: 'active', lastLogin: '2025-06-23 07:45' },
-  { id: 'u3', name: 'John Staff', email: 'john@dqms.com', role: 'staff', status: 'active', lastLogin: '2025-06-23 08:01' },
-  { id: 'u4', name: 'Jane Staff', email: 'jane@dqms.com', role: 'staff', status: 'offline', lastLogin: '2025-06-22 17:30' },
-  { id: 'u5', name: 'Mike Support', email: 'mike@dqms.com', role: 'staff', status: 'offline', lastLogin: '2025-06-21 16:15' },
-];
+// Users will be loaded from the database
 
 const PERMISSIONS = [
   { action: 'View Dashboard', admin: true, supervisor: true, staff: false, customer: false },
@@ -98,6 +91,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigate }) => {
   const [counters, setCounters] = useState<Counter[]>([]);
   const [branches, setBranches] = useState<Branch[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
 
   // Service CRUD modal
   const [showServiceModal, setShowServiceModal] = useState(false);
@@ -152,6 +146,8 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigate }) => {
     if (ctrs.status === 'fulfilled') setCounters(ctrs.value);
     if (brs.status === 'fulfilled') setBranches(brs.value);
     if (logs.status === 'fulfilled') setAuditLogs(logs.value);
+    const usersResult = await api.getUsers().catch(e => { return [] as User[]; });
+    setUsers(usersResult || []);
     if (settings.status === 'fulfilled') {
       setSettingInstName(settings.value.institution_name || 'DQMS Institution');
       setSettingMaxQueue(settings.value.max_queue_size || '50');
@@ -744,7 +740,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigate }) => {
               <div className="page-title-row">
                 <div>
                   <h2 className="page-title">User Management</h2>
-                  <p style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 2 }}>{MOCK_USERS.length} registered users</p>
+                  <p style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 2 }}>{users.length} registered users</p>
                 </div>
                 <button className="btn btn-primary btn-sm"><Plus size={14} /> Add User</button>
               </div>
@@ -760,17 +756,23 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigate }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {MOCK_USERS.map(user => (
+                  {users.map(user => (
                     <tr key={user.id}>
-                      <td style={{ fontWeight: 600, color: 'var(--text-heading)' }}>{user.name}</td>
+                      <td style={{ fontWeight: 600, color: 'var(--text-heading)' }}>{user.email.split('@')[0]}</td>
                       <td style={{ color: 'var(--text-muted)', fontSize: 13 }}>{user.email}</td>
-                      <td><span className={`role-badge ${user.role}`}>{user.role}</span></td>
-                      <td><span className={`status-badge ${user.status}`}>{user.status}</span></td>
-                      <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{user.lastLogin}</td>
+                      <td>
+                        <select className="form-input" value={user.role || 'customer'} onChange={async e => { try { await api.updateUserRole(user.id, e.target.value); showToast('Role updated'); await loadData(); } catch (err: any) { showToast(err.message || 'Failed', 'error'); } }}>
+                          <option value="admin">admin</option>
+                          <option value="supervisor">supervisor</option>
+                          <option value="staff">staff</option>
+                          <option value="customer">customer</option>
+                        </select>
+                      </td>
+                      <td><span className={`status-badge online`}>—</span></td>
+                      <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{user.created_at || '—'}</td>
                       <td>
                         <div style={{ display: 'flex', gap: 6 }}>
                           <button className="btn btn-secondary btn-sm" title="Edit"><Edit3 size={12} /></button>
-                          <button className="btn btn-secondary btn-sm" style={{ color: 'var(--danger)', borderColor: 'var(--danger)' }} title="Delete"><Trash2 size={12} /></button>
                         </div>
                       </td>
                     </tr>

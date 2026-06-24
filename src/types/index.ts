@@ -85,3 +85,10 @@ export interface Profile {
   branch_id: string | null;
   created_at: string;
 }
+
+export interface User {
+  id: string;
+  email: string;
+  role?: 'admin' | 'supervisor' | 'staff' | 'customer';
+  created_at?: string;
+}
