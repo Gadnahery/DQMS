@@ -5,12 +5,12 @@ export { getSupabaseClient };
 
 export const api = {
   async getUserRole(userId: string): Promise<string> {
-    const { data, error } = await supabase.from('user_roles').select('role').eq('id', userId).single();
+    const { data, error } = await supabase.rpc('get_my_role');
     if (error) {
       console.warn('Failed to fetch role:', error.message);
       return 'customer';
     }
-    return data?.role || 'customer';
+    return data || 'customer';
   },
 
   getServices: async (): Promise<Service[]> => {
