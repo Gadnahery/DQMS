@@ -1,5 +1,5 @@
 import { supabase, getSupabaseClient } from '../../lib/supabase';
-import type { Service, Ticket, Counter, Announcement, Feedback } from '../../types';
+import type { Service, Ticket, Counter, Announcement, Feedback, Branch, AppSetting, AuditLog } from '../../types';
 
 export { getSupabaseClient };
 
@@ -61,6 +61,11 @@ export const api = {
     if (error) throw error;
   },
 
+  setServiceActive: async (id: string, isActive: boolean): Promise<void> => {
+    const { error } = await supabase.from('services').update({ is_active: isActive }).eq('id', id);
+    if (error) throw error;
+  },
+
   getTickets: async (): Promise<Ticket[]> => {
     const { data, error } = await supabase.from('tickets').select('*, services(*)').order('created_at', { ascending: false });
     if (error) throw error;
@@ -100,8 +105,19 @@ export const api = {
     return data || [];
   },
 
+  createCounter: async (counter: Counter): Promise<Counter> => {
+    const { data, error } = await supabase.from('counters').insert([counter]).select().single();
+    if (error) throw error;
+    return data;
+  },
+
   updateCounter: async (id: number, updates: Partial<Counter>): Promise<void> => {
     const { error } = await supabase.from('counters').update(updates).eq('id', id);
+    if (error) throw error;
+  },
+
+  deleteCounter: async (id: number): Promise<void> => {
+    const { error } = await supabase.from('counters').delete().eq('id', id);
     if (error) throw error;
   },
 
@@ -120,6 +136,50 @@ export const api = {
     const { data, error } = await supabase.from('announcements').insert([{ message, active: true }]).select().single();
     if (error) throw error;
     return data;
+  },
+
+  getBranches: async (): Promise<Branch[]> => {
+    const { data, error } = await supabase.from('branches').select('*').order('name');
+    if (error) throw error;
+    return data || [];
+  },
+
+  createBranch: async (branch: Pick<Branch, 'name' | 'location' | 'status'>): Promise<Branch> => {
+    const { data, error } = await supabase.from('branches').insert([branch]).select().single();
+    if (error) throw error;
+    return data;
+  },
+
+  updateBranch: async (id: string, updates: Partial<Branch>): Promise<Branch> => {
+    const { data, error } = await supabase.from('branches').update(updates).eq('id', id).select().single();
+    if (error) throw error;
+    return data;
+  },
+
+  deleteBranch: async (id: string): Promise<void> => {
+    const { error } = await supabase.from('branches').delete().eq('id', id);
+    if (error) throw error;
+  },
+
+  getSettings: async (): Promise<Record<string, string>> => {
+    const { data, error } = await supabase.from('app_settings').select('key,value');
+    if (error) throw error;
+    return (data || []).reduce<Record<string, string>>((acc: Record<string, string>, setting: AppSetting) => {
+      acc[setting.key] = setting.value;
+      return acc;
+    }, {});
+  },
+
+  saveSettings: async (settings: Record<string, string>): Promise<void> => {
+    const rows = Object.entries(settings).map(([key, value]) => ({ key, value, updated_at: new Date().toISOString() }));
+    const { error } = await supabase.from('app_settings').upsert(rows, { onConflict: 'key' });
+    if (error) throw error;
+  },
+
+  getAuditLogs: async (): Promise<AuditLog[]> => {
+    const { data, error } = await supabase.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(100);
+    if (error) throw error;
+    return data || [];
   },
 
   getFeedback: async (): Promise<Feedback[]> => {

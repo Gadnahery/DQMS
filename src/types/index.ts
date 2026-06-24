@@ -8,6 +8,7 @@ export interface Service {
   description?: string;
   max_capacity?: number;
   is_active?: boolean;
+  created_at?: string;
 }
 
 export interface Ticket {
@@ -31,6 +32,8 @@ export interface Counter {
   status: 'online' | 'offline' | 'paused';
   current_service_id: string | null;
   staff_name?: string;
+  branch_id?: string | null;
+  last_active_at?: string;
 }
 
 export interface Announcement {
@@ -52,7 +55,24 @@ export interface Branch {
   id: string;
   name: string;
   location: string;
-  status: 'active' | 'inactive' | 'maintenance';
+  status: 'active' | 'inactive' | 'maintenance' | 'paused';
+  counters?: number;
+  created_at: string;
+}
+
+export interface AppSetting {
+  key: string;
+  value: string;
+  updated_at?: string;
+}
+
+export interface AuditLog {
+  id: string;
+  actor_id: string | null;
+  actor_email: string | null;
+  action: string;
+  target: string | null;
+  result: string;
   created_at: string;
 }
 
