@@ -156,6 +156,16 @@ export const api = {
   updateUserRole: async (id: string, role: string): Promise<void> => {
     const { error } = await supabase.from('user_roles').upsert([{ id, role }], { onConflict: 'id' });
     if (error) throw error;
+    // write an audit log entry
+    try {
+      const current = await supabase.auth.getUser();
+      const actorId = current.data.user?.id || null;
+      const actorEmail = current.data.user?.email || null;
+      await supabase.from('audit_logs').insert([{ actor_id: actorId, actor_email: actorEmail, action: 'update_role', target: id, result: 'success' }]);
+    } catch (e) {
+      // non-fatal
+      console.warn('Failed to write audit log', e);
+    }
   },
 
   createBranch: async (branch: Pick<Branch, 'name' | 'location' | 'status'>): Promise<Branch> => {
