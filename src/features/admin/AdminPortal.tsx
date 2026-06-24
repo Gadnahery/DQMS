@@ -657,7 +657,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigate }) => {
               {/* KPI cards */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
                 {[
-                  { icon: <Users size={20} color="var(--primary)" />, value: MOCK_USERS.length, label: 'Total Users', trend: '+2 this week', up: true },
+                  { icon: <Users size={20} color="var(--primary)" />, value: users.length, label: 'Total Users', trend: '+2 this week', up: true },
                   { icon: <CheckCircle2 size={20} color="var(--success)" />, value: todayTickets.length, label: 'Tickets Today', trend: `${completed.length} done`, up: true },
                   { icon: <Clock size={20} color="var(--warning)" />, value: `${avgWait}m`, label: 'Avg Wait', trend: 'Target: <10m', up: avgWait < 10 },
                   { icon: <Star size={20} color="#f59e0b" />, value: `${avgRating}★`, label: 'Customer Rating', trend: '94% positive', up: true },
